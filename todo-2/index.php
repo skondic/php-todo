@@ -13,27 +13,27 @@
         $newTask = ($_POST['task']);             // Az űrlapból érkező task értékét eltároljuk a $newTask változóba.
         $todos[] = $newTask;                  // Az új teendőt hozzáadjuk a meglévő $todos tömbhöz.
 
-        file_put_contents($todoFile, json_encode($todos)); // A tömböt JSON formátumba alakítjuk a json_encode() segítségével, majd kiírjuk a todos.json fájlba.
+        file_put_contents($todoFile, json_encode($todos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)); // A tömböt JSON formátumba alakítjuk a json_encode() segítségével, majd kiírjuk a todos.json fájlba.
+        // JSON_UNESCAPED_UNICODE opció megakadályozza a Unicode escape szekvenciák használatát. Így például a "banán" a fájlban "banán" formában fog megjelenni, nem pedig "ban\u00e1n".
+        // A file_put_contents() a JSON szöveget a todos.json fájlba írja. Ha a fájl nem létezik, létrehozza azt.
+        // A json_encode() a PHP tömböt JSON formátumú szöveggé alakítja. A JSON_PRETTY_PRINT opció ember számára olvashatóbbá teszi a fájlban tárolt adatokat (új sorokkal és behúzásokkal).
 
         header('Location: index.php'); // Átirányítás az alap oldalra, elkerülve az adat újraküldését
         exit();                         // Megszakítjuk a további kód feldolgozást
     }
 
-    // // Teendő törlése
-    // if (isset($_GET['delete'])) {  // // Ha a delete GET paraméter szerepel az URL-ben
-    //     $indexToDelete = (int)$_GET['delete']; // Az URL-ből érkező értéket (?delete=$index) számra alakítjuk.
-    //     if (isset($todos[$indexToDelete])) { // Ellenőrzizzük, hogy a megadott index létezik-e a $todos tömbben.
-    //         unset($todos[$indexToDelete]); // Törljük a teendőt az adott index alapján.
-    //         $todos = array_values($todos); // Az array_values újraindexeli a tömböt, hogy ne legyenek kihagyott indexek (pl. [0, 2] helyett [0, 1]).
-    //         saveTodos($todos); // Elmenti a frissített teendőlistát.
-    //     }
-    //     header('Location: index.php'); // Átirányítjuk az oldalt, hogy a törlés után az URL-ben maradt GET paraméterek eltűnjenek.
-    //     exit(); // Megakadályozzuk a további kód futtatását.
-    // }
-
-
+    // Teendő törlése
+    if (isset($_GET['delete'])) {         // Ha a delete GET paraméter szerepel az URL-ben
+        $indexToDelete = (int)$_GET['delete']; // Az URL-ből érkező értéket (?delete=$index) számra alakítjuk.
+        if (isset($todos[$indexToDelete])) { // Ellenőrzizzük, hogy a megadott index létezik-e a $todos tömbben.
+            unset($todos[$indexToDelete]); // Törljük a teendőt az adott index alapján.
+            $todos = array_values($todos); // Az array_values újraindexeli a tömböt, hogy ne legyenek kihagyott indexek (pl. [0, 2] helyett [0, 1]).
+            file_put_contents($todoFile, json_encode($todos, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)); // Az új tömböt visszaírjuk a JSON fájlba.
+        }
+        header('Location: index.php'); // Átirányítjuk az oldalt, hogy a törlés után az URL-ben maradt GET paraméterek eltűnjenek.
+        exit(); // Megakadályozzuk a további kód futtatását.
+    }
     ?>
-
 
  <!DOCTYPE html>
  <html lang="en">
@@ -87,7 +87,6 @@
 
          </tbody>
      </table>
-
 
      <script>
          const checkboxes = document.querySelectorAll('.todo-checkbox'); // Az összes checkbox lekérése ( NodeList-et ad vissza)
