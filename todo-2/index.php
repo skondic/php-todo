@@ -1,30 +1,37 @@
  <?php
-    session_start();
+    // A teendőket tároljuk a $todoFile változóba - json formátumba 
+    $todoFile = 'todos.json';
 
-    if (!isset($_SESSION['todos'])) {
-        $_SESSION['todos'] = [];  // Első betöltéskor, létrehozunk egy üres tömböt. A teendők itt lesznek tárolva.
-    }
-
+    // Ellenőrizzük, hogy létezik-e a todos.json fájl
+    $todos = file_exists($todoFile) ? json_decode(file_get_contents($todoFile), true) : [];
+    // Ha létezik: file_get_contents()-tel beolvassuk a fájl tartalmát.
+    // A json_decode() függvénnyel átalakítjuk JSON formátumú szöveget PHP tömbbé.
+    // A true paraméter azt jelenti, hogy asszociatív tömböt kapunk vissza (nem objektumot).
+    // Ha nem létezik a fájl, akkor üres tömböt ([]) használunk alapértelmezettként.
 
     if (isset($_POST['submit']) && !empty($_POST['task'])) { // Ha egy új teendőt elküldünk és a bevitel nem üres
-        $_SESSION['todos'][] = ($_POST['task']);             // akkor azt hozzáadjuk a $_SESSION['todos'] tömbhöz
+        $newTask = ($_POST['task']);             // Az űrlapból érkező task értékét eltároljuk a $newTask változóba.
+        $todos[] = $newTask;                  // Az új teendőt hozzáadjuk a meglévő $todos tömbhöz.
+
+        file_put_contents($todoFile, json_encode($todos)); // A tömböt JSON formátumba alakítjuk a json_encode() segítségével, majd kiírjuk a todos.json fájlba.
 
         header('Location: index.php'); // Átirányítás az alap oldalra, elkerülve az adat újraküldését
         exit();                         // Megszakítjuk a további kód feldolgozást
     }
 
-    if (isset($_GET['delete'])) {               // Ha a delete GET paraméter szerepel az URL-ben
-        $indexToDelete = (int)$_GET['delete'];
+    // // Teendő törlése
+    // if (isset($_GET['delete'])) {  // // Ha a delete GET paraméter szerepel az URL-ben
+    //     $indexToDelete = (int)$_GET['delete']; // Az URL-ből érkező értéket (?delete=$index) számra alakítjuk.
+    //     if (isset($todos[$indexToDelete])) { // Ellenőrzizzük, hogy a megadott index létezik-e a $todos tömbben.
+    //         unset($todos[$indexToDelete]); // Törljük a teendőt az adott index alapján.
+    //         $todos = array_values($todos); // Az array_values újraindexeli a tömböt, hogy ne legyenek kihagyott indexek (pl. [0, 2] helyett [0, 1]).
+    //         saveTodos($todos); // Elmenti a frissített teendőlistát.
+    //     }
+    //     header('Location: index.php'); // Átirányítjuk az oldalt, hogy a törlés után az URL-ben maradt GET paraméterek eltűnjenek.
+    //     exit(); // Megakadályozzuk a további kód futtatását.
+    // }
 
-        if (isset($_SESSION['todos'][$indexToDelete])) {
-            unset($_SESSION['todos'][$indexToDelete]);     // Az URL-ben megadott indexet ($_GET['delete']) töröljük a $_SESSION['todos'] tömbből.
-            $_SESSION['todos'] = array_values($_SESSION['todos']); // Az array_values() újraindexeli a tömböt, hogy az indexek sorrendje folyamatos legyen.
-        }
 
-
-        header('Location: index.php'); // Átirányítás az alap URL-re (GET paraméterek nélkül)
-        exit();                         // Megszakítjuk a további kód feldolgozást
-    }
     ?>
 
 
@@ -62,8 +69,8 @@
 
          <tbody>
              <?php
-                if (!empty($_SESSION['todos'])) {  // Ha a $_SESSION['todos'] nem üres, akkor azokat foreach ciklussal jelenítjük meg az $index és a $todo alapján.
-                    foreach ($_SESSION['todos'] as $index => $todo) {
+                if (!empty($todos)) {  // Ha a $todos nem üres, akkor azokat foreach ciklussal jelenítjük meg az $index és a $todo alapján.
+                    foreach ($todos as $index => $todo) {
 
 
                         print
