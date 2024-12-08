@@ -1,0 +1,87 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+body {
+  font-family: "Roboto";
+  background-color: #ecebde;
+}
+
+.heading {
+  text-align: center;
+}
+
+form {
+  border-radius: 5px;
+  border: 1px solid;
+  margin: auto;
+  width: 60%;
+  padding: 10px;
+  background-color: #d7d3bf;
+}
+
+.task_input {
+  width: 65%;
+  padding: 5px;
+}
+
+.add_btn {
+  font-size: 16px;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: #a59d84;
+  border-style: none;
+}
+
+.add_btn:hover {
+  background-color: #ecebde;
+  border: 1px solid;
+}
+
+table {
+  width: 60%;
+  margin: 30px auto;
+  border-collapse: collapse;
+}
+
+tr {
+  border-bottom: 1px solid;
+}
+
+th,
+td {
+  border: none;
+  height: 30px;
+  padding: 2px;
+}
+
+.task {
+  text-align: left;
+}
+
+.num {
+  text-align: center;
+  width: 10%;
+}
+
+.del_row,
+.chk {
+  text-align: center;
+  width: 10%;
+}
+
+.delete_btn {
+  text-align: center;
+  background-color: red;
+  color: white;
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+.delete_btn:hover {
+  background-color: white;
+  color: red;
+  border: 2px solid red;
+}
+
+.del_row a {
+  text-decoration: none;
+}
